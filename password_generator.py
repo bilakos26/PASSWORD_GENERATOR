@@ -4,7 +4,7 @@ def main():
     alphabet_list = alphabet()
     symbols_list = symbols()
     ch1, ch2, ch3 = choices()
-    proceed, ch2_proceed, ch3_proceed = check(ch1, ch2, ch3)
+    proceed, ch2_proceed, ch3_proceed = check(ch2, ch3)
     generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, ch1)
 
 
@@ -24,29 +24,43 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
         elif random_selection == 2 and ch2_proceed == True:
             lower_lt = randint(0, 1)
             if lower_lt == 1:
-                alph_index = randint(0, len(alphabet_list))
+                alph_index = randint(0, len(alphabet_list)-1)
                 password = password + alphabet_list[alph_index].lower()
             else:
-                alph_index = randint(0, len(alphabet_list))
+                alph_index = randint(0, len(alphabet_list)-1)
                 password = password + alphabet_list[alph_index]
         elif random_selection == 3 and ch3_proceed == True:
-            symp_index = randint(0, len(symbols_list))
+            symp_index = randint(0, len(symbols_list)-1)
             password = password + symbols_list[symp_index]
     lower_letters = 0
     upper_letters = 0
     cont_loop = False
     for i in password:
-        if i.islower():
-            lower_letters += 1
-        if i.isupper():
-            upper_letters += 1
-    if lower_letters == 0 or upper_letters == 0:
-        password = ''
-        lower_letters = 0
-        upper_letters = 0
-        cont_loop = True
+        try:
+            if type(int(password)) != int:
+                if i.islower():
+                    lower_letters += 1
+                if i.isupper():
+                    upper_letters += 1
+        except Exception:
+            if i.islower():
+                lower_letters += 1
+            if i.isupper():
+                upper_letters += 1
+    try:
+        if type(int(password)) != int:
+            if lower_letters == 0 or upper_letters == 0:
+                password = ''
+                lower_letters = 0
+                upper_letters = 0
+                cont_loop = True
+            else:
+                cont_loop = False 
+    except Exception:
+        cont_loop = False
 
-    while cont_loop == True:
+    #If the "For" loop give cont_loop = True the script will continue with the "while" loop
+    while cont_loop:
         for i in range(ch1):
             #Checking the choices that are True
             if proceed == 0:
@@ -61,30 +75,42 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
             elif random_selection == 2 and ch2_proceed == True:
                 lower_lt = randint(0, 1)
                 if lower_lt == 1:
-                    alph_index = randint(0, len(alphabet_list))
+                    alph_index = randint(0, len(alphabet_list)-1)
                     password = password + alphabet_list[alph_index].lower()
                 else:
-                    alph_index = randint(0, len(alphabet_list))
+                    alph_index = randint(0, len(alphabet_list)-1)
                     password = password + alphabet_list[alph_index]
             elif random_selection == 3 and ch3_proceed == True:
-                symp_index = randint(0, len(symbols_list))
+                symp_index = randint(0, len(symbols_list)-1)
                 password = password + symbols_list[symp_index]
         for i in password:
-            if i.islower():
-                lower_letters += 1
-            if i.isupper():
-                upper_letters += 1
-        if lower_letters == 0 or upper_letters == 0:
-            password = ''
-            lower_letters = 0
-            upper_letters = 0
-            cont_loop = True
-        else:
+            try:
+                if type(int(password)) != int:
+                    if i.islower():
+                        lower_letters += 1
+                    if i.isupper():
+                        upper_letters += 1
+            except Exception:
+                if i.islower():
+                    lower_letters += 1
+                if i.isupper():
+                    upper_letters += 1
+        try:
+            if type(int(password)) != int:
+                if lower_letters == 0 or upper_letters == 0:
+                    password = ''
+                    lower_letters = 0
+                    upper_letters = 0
+                    cont_loop = True
+                else:
+                    cont_loop = False 
+        except Exception:
             cont_loop = False 
+
     print(password)
 
 
-def check(ch1, ch2, ch3):
+def check(ch2, ch3):
     ch2_proceed = False
     ch3_proceed = False
     proceed = 0
