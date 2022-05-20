@@ -1,17 +1,28 @@
 from random import randint
 import random
+import PySimpleGUI as sg
 
-def main():
+# Theme
+sg.theme("darkblue1")
+
+layout = [
+    [sg.Frame("Password length: ", [[sg.Input(key = '-PASS_LENGTH-', font = ("Arial", 12), text_color='Black')]], size = (150, 40))],
+    [sg.Checkbox("Letters", key = '-LETTERS-')],
+    [sg.Checkbox("Symbols", key = '-SYMBOLS-')],
+    [sg.Button("Create", key = '-CREATE-', button_color=("green", "black"), font= ("Arial", 20))],
+    [sg.Multiline("", key = "-DESCRIPTION-", size = (100, 5), font = ("Arial", 12), text_color='Black', no_scrollbar=True, disabled=True)]
+]
+
+def main(pl, values):
     alphabet_list = alphabet()
     symbols_list = symbols()
-    ch1, ch2, ch3 = choices()
-    proceed, ch2_proceed, ch3_proceed = check(ch2, ch3)
-    generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, ch1)
+    proceed, ch2_proceed, ch3_proceed = check(values)
+    generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, pl)
 
 
-def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, ch1):
+def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, pl):
     password = ''
-    for i in range(ch1):
+    for i in range(pl):
         #Checking the choices that are True
         if proceed == 0:
             random_selection = 1
@@ -38,7 +49,6 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
             password = password + symbols_list[symp_index]
     lower_letters = 0
     upper_letters = 0
-    symb_chars = 0
     cont_loop = False
     for i in password:
         try:
@@ -47,15 +57,11 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
                     lower_letters += 1
                 if i.isupper():
                     upper_letters += 1
-                if i in symbols_list:
-                    symb_chars += 1
         except Exception:
             if i.islower():
                 lower_letters += 1
             if i.isupper():
                 upper_letters += 1
-            if i in symbols_list:
-                symb_chars += 1
     try:
         if type(int(password)) != int:
             if ch2_proceed:
@@ -63,7 +69,6 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
                     password = ''
                     lower_letters = 0
                     upper_letters = 0
-                    symb_chars = 0
                     cont_loop = True
             else:
                 cont_loop = False 
@@ -72,7 +77,7 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
 
     #If the "For" loop give cont_loop = True the script will continue with the "while" loop
     while cont_loop:
-        for i in range(ch1):
+        for i in range(pl):
             #Checking the choices that are True
             if proceed == 0:
                 random_selection = 1
@@ -104,15 +109,11 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
                         lower_letters += 1
                     if i.isupper():
                         upper_letters += 1
-                    if i in symbols_list:
-                        symb_chars += 1
             except Exception:
                 if i.islower():
                     lower_letters += 1
                 if i.isupper():
                     upper_letters += 1
-                if i in symbols_list:
-                    symb_chars += 1
         try:
             if type(int(password)) != int:
                 if ch2_proceed:
@@ -120,45 +121,26 @@ def generation(alphabet_list, symbols_list, proceed, ch2_proceed, ch3_proceed, c
                         password = ''
                         lower_letters = 0
                         upper_letters = 0
-                        symb_chars = 0
                         cont_loop = True
                 else:
                     cont_loop = False 
         except Exception:
             cont_loop = False 
 
-    print(password)
+    window['-DESCRIPTION-'].update(password)
 
 
-def check(ch2, ch3):
+def check(values):
     ch2_proceed = False
     ch3_proceed = False
     proceed = 0
-    if ch2 == 1:
+    if values["-LETTERS-"]:
         ch2_proceed = True
         proceed += 1
-    if ch3 == 2:
+    if values["-SYMBOLS-"]:
         ch3_proceed = True
         proceed += 1
     return proceed, ch2_proceed, ch3_proceed
-
-
-def choices():
-    choice1 = int(input('How big do you want your password to be: '))
-    print('')
-    choice2 = int(input('Do you want your password to contain letter? If yes give --> 1 else give 0: '))
-    print('')
-    while choice2 > 1 or choice2 < 0:
-        print('Wrong input. Please try again.')
-        choice2 = int(input('Do you want your password to contain letter? If yes give --> 1 else give 0: '))
-        print('')
-    choice3 = int(input('Do you want your password to contain symbols? If yes give --> 2 else give 0: '))
-    print('')
-    while choice3 > 2 or choice2 < 0:
-        print('Wrong input. Please try again.')
-        choice2 = int(input('Do you want your password to contain symbols? If yes give --> 2 else give 0: '))
-        print('')
-    return choice1, choice2, choice3
 
 
 def alphabet():
@@ -171,4 +153,20 @@ def symbols():
     symp = ['!', '@', '#', '$', '%', '*', '^', '&', '/']
     return symp
 
-main()
+if __name__ == "__main__":
+    window = sg.Window("Password Generator", layout, size = (500, 450))
+
+    while True:
+        event, values = window.read()
+        
+        if event == sg.WIN_CLOSED:
+            break
+        
+        if event == "-CREATE-":
+            try:
+                pl = int(values["-PASS_LENGTH-"])
+                main(pl, values)
+            except Exception:
+                sg.Popup("Error", 'The "Password length" must be an interger not a string or empty.')
+
+    window.close()
